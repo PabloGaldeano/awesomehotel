@@ -1,0 +1,41 @@
+version: "3"
+
+networks:
+  rest-api:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.12.1.0/24
+  mongodb:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.12.2.0/23
+
+services:
+  awesomehotel:
+    build: ./
+    ports:
+      - "8080:8080"
+
+    networks:
+      rest-api:
+        ipv4_address:  172.12.1.2
+      mongodb:
+        ipv4_address: 172.12.2.2
+    env_file:
+      - ./development.env
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27016:27017"
+    container_name: "hotelmongodb"
+    networks:
+      mongodb:
+        ipv4_address: 172.12.3.2
+    volumes:
+    - ./build:/build
