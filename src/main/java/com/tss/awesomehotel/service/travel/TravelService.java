@@ -1,5 +1,6 @@
 package com.tss.awesomehotel.service.travel;
 
+import com.tss.awesomehotel.dao.travel.TravelDAO;
 import com.tss.awesomehotel.model.travel.TourStep;
 import com.tss.awesomehotel.model.travel.TravelPath;
 import com.tss.awesomehotel.model.travel.TravellingCustomers;
@@ -16,6 +17,8 @@ public class TravelService
 {
     @Autowired
     private TravelSignUpService travelSignUpService;
+
+
 
     private static TourStep shortestTour;
 
@@ -44,11 +47,6 @@ public class TravelService
         }
     }
 
-    public TourStep getShortestPath()
-    {
-        return shortestTour;
-    }
-
     public TourStep getShortTourWithCustomers()
     {
         TourStep nextStep = shortestTour;
@@ -60,5 +58,6 @@ public class TravelService
         }
         return shortestTour;
     }
+
 
 }

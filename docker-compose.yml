@@ -12,7 +12,14 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.12.2.0/23
+        - subnet: 172.12.2.0/24
+
+  redis:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.12.4.0/24
 
 services:
   awesomehotel:
@@ -25,10 +32,21 @@ services:
         ipv4_address:  172.12.1.2
       mongodb:
         ipv4_address: 172.12.2.2
+      redis:
+        ipv4_address: 172.12.4.2
     env_file:
       - ./development.env
     depends_on:
       - mongo
+      - redis
+  redis:
+    image: redis:latest
+    container_name: "hotelredis"
+    ports:
+    - "6379:6379"
+    networks:
+      redis:
+        ipv4_address: 172.12.4.3
   mongo:
     image: mongo:latest
     ports:
@@ -36,6 +54,6 @@ services:
     container_name: "hotelmongodb"
     networks:
       mongodb:
-        ipv4_address: 172.12.3.2
+        ipv4_address: 172.12.2.3
     volumes:
-    - ./build:/build
+      - ./build:/build

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RequestMapping("/customer")
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 public class CustomerController extends GenericController
 {
@@ -25,7 +26,7 @@ public class CustomerController extends GenericController
      *
      * @param customer This is the customer to attempt to check in
      */
-    @CrossOrigin(origins = "http://localhost:8081")
+
     @PostMapping("/check_in")
     public ServiceResponse checkCustomerIn(@RequestBody Customer customer)
     {
@@ -45,8 +46,8 @@ public class CustomerController extends GenericController
 
     /**
      * This is a function used to check out a customer.
-     * @param customerID
-     * @return
+     * @param customerID The ID of the customer to checkout
+     * @return A {@link ServiceResponse } instance with the result of the operation
      */
     @DeleteMapping("/check_out")
     public ServiceResponse checkOutCustomer(@NonNull @RequestBody String customerID)

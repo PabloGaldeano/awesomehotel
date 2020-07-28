@@ -1,4 +1,7 @@
 app:
+  bootstrap:
+    initialOperations:
+      - com.tss.awesomehotel.config.bootstrap.operations.CalculateShortestTourOperation
   tokens:
     token_length: 32
     token_separator: __
