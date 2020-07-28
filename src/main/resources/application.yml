@@ -6,5 +6,4 @@ app:
     token_length: 32
     token_separator: __
   security:
-
     salt: U!mB=D54:=YQ!gY>g}j"8?%8#hLe9p9BsmFy}G5^_[>,q3!q9'PANH$aG:tHx(`4_pq6?FD.7W?UuY84j<<ZfxR6#dQ?.J;{/?9fL~>fp,d]TE?gjv`[PUR;Q@V+]8URgFHAf9*T3yR)2h&7!,\"4e+$4,&v%$E\SjvH3*aCdv8>%s]*"#'Wy)Bc~7R(mzYBMsSxq*&,SK;8+yZ8R)apmz-NW[3HtRAM}K&fNp^UZBr(>y+(rRH;RQd#/8N5FcrP
