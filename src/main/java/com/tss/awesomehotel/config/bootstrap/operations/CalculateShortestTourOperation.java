@@ -42,6 +42,7 @@ public class CalculateShortestTourOperation implements BootstrapOperation
                 travelPath.getConnections().forEach(connectionsMap ->
                         this.parsePathConnections(travelPath, connectionsMap)));
 
+        this.calculateShortestPath();
         System.out.println("Calculating shortest path");
     }
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tour")
+@CrossOrigin(origins = "http://localhost:8081")
 public class TravelController extends GenericController
 {
     @Autowired
