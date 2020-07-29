@@ -9,15 +9,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class models the different points the hotel
+ * offers to their customers
+ */
 @Document(collection = "paths")
 public class TourStop
 {
+    /**
+     * The ID of the stop
+     */
     @Id
     protected int travelPathID;
 
+    /**
+     * The name of the stop
+     */
     @JsonProperty("name")
     protected String name;
 
+    /**
+     * The different connections of this stop
+     */
     @JsonProperty("connections")
     protected List<HashMap<String,Double>> connections;
 
