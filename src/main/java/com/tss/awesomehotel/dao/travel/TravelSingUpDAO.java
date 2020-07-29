@@ -9,16 +9,17 @@ public interface TravelSingUpDAO
 {
 
     /**
+     * This method signs a customer for today's ride
      *
-     * @param customer
-     * @param placeToGo
-     * @return
+     * @param customer The customer to sign up
+     * @param placeToGo The ID of the path where the customer is heading
+     * @return <code>true</code> if inserted succesfully <code>false</code> otherwise
      */
     public boolean singCustomerInForToday(Customer customer, int placeToGo);
 
     /**
-     *
-     * @return
+     * Gets a list of all the customers in today's ride
+     * @return The list of customers signed up
      */
     public Optional<TravellingCustomers> getCustomersSignedUpForToday();
 }

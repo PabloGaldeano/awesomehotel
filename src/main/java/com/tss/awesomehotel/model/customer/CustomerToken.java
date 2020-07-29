@@ -6,11 +6,21 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 
+/**
+ * This is the model of the customer token.
+ */
 @RedisHash("CustomerToken")
 public class CustomerToken implements Serializable
 {
+    /**
+     * The ID of the customer
+     */
     @Id
     private String customerID;
+
+    /**
+     * The token value
+     */
     private String token;
 
     public CustomerToken(String customerID, String token)

@@ -14,12 +14,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"spring.data.mongodb.host=localhost", "spring.data.mongodb.port=27017", "spring.data.mongodb.database=awesomehotelTest"})
+@SpringBootTest()
 @AutoConfigureMockMvc
 public class CustomerControllerTest extends GenericCustomerControllerTest
 {
-
-
     @Test
     public void checkCustomerIn() throws Exception
     {

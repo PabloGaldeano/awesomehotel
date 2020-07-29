@@ -1,7 +1,7 @@
 package com.tss.awesomehotel.config.bootstrap.operations;
 
 import com.tss.awesomehotel.dao.travel.TravelDAO;
-import com.tss.awesomehotel.model.travel.TravelPath;
+import com.tss.awesomehotel.model.travel.TourStop;
 import com.tss.awesomehotel.service.travel.TravelService;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.tour.HeldKarpTSP;
@@ -23,18 +23,18 @@ public class CalculateShortestTourOperation implements BootstrapOperation
     @Autowired
     private TravelDAO pathsDao;
 
-    private SimpleWeightedGraph<TravelPath, DefaultWeightedEdge> routeGraph;
+    private SimpleWeightedGraph<TourStop, DefaultWeightedEdge> routeGraph;
 
-    private List<TravelPath> travelPaths;
+    private List<TourStop> tourStops;
 
     @Override
     public void executeBootstrapOperation()
     {
         // Reading the paths from the DB
-        this.travelPaths = this.pathsDao.getAllPaths();
+        this.tourStops = this.pathsDao.getAllPaths();
         this.routeGraph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
 
-        travelPaths.stream().peek(travelPath ->
+        tourStops.stream().peek(travelPath ->
         {
             routeGraph.addVertex(travelPath);
             System.out.println("Adding the stop " + travelPath.getName());
@@ -48,19 +48,19 @@ public class CalculateShortestTourOperation implements BootstrapOperation
 
     private void calculateShortestPath()
     {
-        HeldKarpTSP<TravelPath, DefaultWeightedEdge> path = new HeldKarpTSP<>();
-        GraphPath<TravelPath, DefaultWeightedEdge> tour = path.getTour(routeGraph);
+        HeldKarpTSP<TourStop, DefaultWeightedEdge> path = new HeldKarpTSP<>();
+        GraphPath<TourStop, DefaultWeightedEdge> tour = path.getTour(routeGraph);
         TravelService.setShortestTour(tour);
     }
 
-    private void parsePathConnections(TravelPath travelPath, HashMap<String, Double> connectionsMap)
+    private void parsePathConnections(TourStop tourStop, HashMap<String, Double> connectionsMap)
     {
-        Optional<TravelPath> possiblePath = travelPaths.stream().filter(path -> path.getTravelPathID() == connectionsMap.get("to")).findFirst();
+        Optional<TourStop> possiblePath = tourStops.stream().filter(path -> path.getTravelPathID() == connectionsMap.get("to")).findFirst();
         if (possiblePath.isPresent())
         {
-            TravelPath destination = possiblePath.get();
-            System.out.println("Adding the route path from " + travelPath.getName() + " to " + destination.getName());
-            routeGraph.setEdgeWeight(routeGraph.addEdge(travelPath, destination), connectionsMap.get("distance"));
+            TourStop destination = possiblePath.get();
+            System.out.println("Adding the route path from " + tourStop.getName() + " to " + destination.getName());
+            routeGraph.setEdgeWeight(routeGraph.addEdge(tourStop, destination), connectionsMap.get("distance"));
         } else
         {
             Logger.getGlobal().log(Level.WARNING, "Can not find the destination with ID: {0} in the list retrieved from the DB",

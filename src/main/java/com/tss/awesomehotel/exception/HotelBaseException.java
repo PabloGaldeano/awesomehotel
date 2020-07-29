@@ -1,9 +1,9 @@
 package com.tss.awesomehotel.exception;
 
-import com.tss.awesomehotel.utils.logging.HotelLog;
 
-import java.util.logging.Level;
-
+/**
+ * The base exception used across the system.
+ */
 public class HotelBaseException extends Exception
 {
     private int exceptionCode;

@@ -13,6 +13,7 @@ import java.util.List;
  */
 public interface CustomerMongoRepository extends MongoRepository<Customer, String>
 {
+
     @Query("{ 'firstName' : ?0}")
     List<Customer> findCustomersByFirstName(@NonNull String firstName);
 

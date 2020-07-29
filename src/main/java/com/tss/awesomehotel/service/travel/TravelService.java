@@ -1,8 +1,7 @@
 package com.tss.awesomehotel.service.travel;
 
-import com.tss.awesomehotel.dao.travel.TravelDAO;
 import com.tss.awesomehotel.model.travel.TourStep;
-import com.tss.awesomehotel.model.travel.TravelPath;
+import com.tss.awesomehotel.model.travel.TourStop;
 import com.tss.awesomehotel.model.travel.TravellingCustomers;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -22,18 +21,18 @@ public class TravelService
 
     private static TourStep shortestTour;
 
-    public static void setShortestTour(GraphPath<TravelPath, DefaultWeightedEdge> tour)
+    public static void setShortestTour(GraphPath<TourStop, DefaultWeightedEdge> tour)
     {
         if (tour != null && tour.getVertexList().size() > 0)
         {
-            Graph<TravelPath, DefaultWeightedEdge> shortestTourGraph = tour.getGraph();
-            List<TravelPath> vertexList = tour.getVertexList();
+            Graph<TourStop, DefaultWeightedEdge> shortestTourGraph = tour.getGraph();
+            List<TourStop> vertexList = tour.getVertexList();
             shortestTour = new TourStep(null, 0.0f, vertexList.get(0));
             TourStep nextStepPointer = shortestTour;
             for(int i = 1; i<vertexList.size(); i++)
             {
-                TravelPath source = vertexList.get(i-1);
-                TravelPath destination = vertexList.get(i);
+                TourStop source = vertexList.get(i-1);
+                TourStop destination = vertexList.get(i);
                 DefaultWeightedEdge edge = shortestTourGraph.getEdge(source, destination);
                 double weigth = shortestTourGraph.getEdgeWeight(edge);
 

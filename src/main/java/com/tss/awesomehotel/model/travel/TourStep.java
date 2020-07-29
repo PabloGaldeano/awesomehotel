@@ -11,7 +11,7 @@ public class TourStep
     private double totalDistance;
 
     @JsonProperty("Path")
-    private TravelPath pathInformation;
+    private TourStop pathInformation;
 
     @JsonProperty("nextStep")
     private TourStep nextStep;
@@ -20,7 +20,7 @@ public class TourStep
     private List<String> signedUpCustomers;
 
 
-    public TourStep(TourStep nextStep, double total_distance, TravelPath pathInformation)
+    public TourStep(TourStep nextStep, double total_distance, TourStop pathInformation)
     {
         this.nextStep = nextStep;
         this.totalDistance = total_distance;
@@ -47,12 +47,12 @@ public class TourStep
         this.totalDistance = total_distance;
     }
 
-    public TravelPath getPathInformation()
+    public TourStop getPathInformation()
     {
         return pathInformation;
     }
 
-    public void setPathInformation(TravelPath pathInformation)
+    public void setPathInformation(TourStop pathInformation)
     {
         this.pathInformation = pathInformation;
     }

@@ -3,6 +3,9 @@ package com.tss.awesomehotel.dto;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * This is the DTO of the {@link com.tss.awesomehotel.model.travel.TourStep}
+ */
 public class TourStepDTO implements Serializable
 {
     /**
@@ -10,14 +13,24 @@ public class TourStepDTO implements Serializable
      */
     private static final long serialVersionUID = 1L;
 
-
-
+    /**
+     * Distance travelled up to this point
+     */
     private double totalDistance;
 
-    private TravelPathDTO pathInformation;
+    /**
+     * The path information
+     */
+    private TourStopDTO pathInformation;
 
+    /**
+     * The next step in the path
+     */
     private TourStepDTO nextStep;
 
+    /**
+     * The customers that were heading to this stop
+     */
     private List<String> customers;
 
     public double getTotalDistance()
@@ -35,12 +48,12 @@ public class TourStepDTO implements Serializable
         return serialVersionUID;
     }
 
-    public TravelPathDTO getPathInformation()
+    public TourStopDTO getPathInformation()
     {
         return pathInformation;
     }
 
-    public void setPathInformation(TravelPathDTO pathInformation)
+    public void setPathInformation(TourStopDTO pathInformation)
     {
         this.pathInformation = pathInformation;
     }

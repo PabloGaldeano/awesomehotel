@@ -73,7 +73,7 @@ public class GenericCustomerControllerTest extends GenericControllerTest
     }
     protected void writeCustomerInRequest(MockHttpServletRequestBuilder destinationBuilder) throws Exception
     {
-        destinationBuilder.content(Parser.mapper.writeValueAsString(this.testCustomer));
+        this.writeObjectInRequestContent(destinationBuilder, this.testCustomer);
     }
 
 

@@ -10,20 +10,20 @@ import java.util.List;
 import java.util.Objects;
 
 @Document(collection = "paths")
-public class TravelPath
+public class TourStop
 {
     @Id
-    private int travelPathID;
+    protected int travelPathID;
 
     @JsonProperty("name")
-    private String name;
+    protected String name;
 
     @JsonProperty("connections")
-    private List<HashMap<String,Double>> connections;
+    protected List<HashMap<String,Double>> connections;
 
 
     @PersistenceConstructor
-    public TravelPath(int travelPathID, String name, List<HashMap<String, Double>> connections)
+    public TourStop(int travelPathID, String name, List<HashMap<String, Double>> connections)
     {
         this.travelPathID = travelPathID;
         this.name = name;
@@ -67,9 +67,9 @@ public class TravelPath
         if (this == o) equals = true;
         else if (o != null)
         {
-            if (o instanceof TravelPath)
+            if (o instanceof TourStop)
             {
-                TravelPath that = (TravelPath) o;
+                TourStop that = (TourStop) o;
                 equals = Double.compare(that.travelPathID, travelPathID) == 0;
             }
             else if (o instanceof  Double)

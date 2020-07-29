@@ -1,5 +1,6 @@
 package com.tss.awesomehotel.controller.generic;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tss.awesomehotel.model.ServiceResponse;
 import com.tss.awesomehotel.utils.Parser;
 import org.junit.Assert;
@@ -11,9 +12,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 public class GenericControllerTest
 {
-
-
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -37,6 +35,11 @@ public class GenericControllerTest
     {
         return this.mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
+    }
+
+    protected void writeObjectInRequestContent(MockHttpServletRequestBuilder destinationBuilder, Object toWrite) throws JsonProcessingException
+    {
+        destinationBuilder.content(Parser.mapper.writeValueAsString(toWrite));
     }
 
     protected ServiceResponse getServiceResponseFromResult(MvcResult result) throws Exception

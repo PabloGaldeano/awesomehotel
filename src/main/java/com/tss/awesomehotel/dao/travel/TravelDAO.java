@@ -1,16 +1,17 @@
 package com.tss.awesomehotel.dao.travel;
 
-import com.tss.awesomehotel.model.travel.TravelPath;
+import com.tss.awesomehotel.model.travel.TourStop;
 
 import java.util.List;
+
 
 public interface TravelDAO
 {
 
     /**
-     *
-     * @return
+     * Method to get all the paths available
+     * @return A list of paths
      */
-    public List<TravelPath> getAllPaths();
+    public List<TourStop> getAllPaths();
 
 }

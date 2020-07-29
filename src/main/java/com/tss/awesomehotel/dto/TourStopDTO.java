@@ -1,17 +1,28 @@
 package com.tss.awesomehotel.dto;
 
+import com.tss.awesomehotel.model.travel.TourStop;
+
 import java.io.Serializable;
 
-public class TravelPathDTO implements Serializable
+/**
+ * The DTO object for {@link TourStop}
+ */
+public class TourStopDTO implements Serializable
 {
     /**
      * The Serializable serialVersionUID
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The name of the stop
+     */
     private String name;
 
-    private double travelPathID;
+    /**
+     * the id of the stop
+     */
+    private double ID;
 
     public static long getSerialVersionUID()
     {
@@ -28,13 +39,13 @@ public class TravelPathDTO implements Serializable
         this.name = name;
     }
 
-    public double getTravelPathID()
+    public double getID()
     {
-        return travelPathID;
+        return ID;
     }
 
-    public void setTravelPathID(double travelPathID)
+    public void setID(double ID)
     {
-        this.travelPathID = travelPathID;
+        this.ID = ID;
     }
 }
