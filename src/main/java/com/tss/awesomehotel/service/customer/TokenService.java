@@ -52,12 +52,14 @@ public class TokenService
     /**
      * The object used to validate the tokens in the string form
      */
-    private final CustomerTokenHelper tokenValidator = new CustomerTokenHelper();
+    @Autowired
+    private CustomerTokenHelper tokenValidator;
 
     /**
      * A reference to the customer validator
      */
-    private final CustomerServiceValidator customerValidator = new CustomerServiceValidator();
+    private final CustomerServiceValidator customerValidator= new CustomerServiceValidator();
+
 
     // ============== PUBLIC INTERFACE =============
 

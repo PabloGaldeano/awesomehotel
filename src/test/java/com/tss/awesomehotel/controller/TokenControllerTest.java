@@ -3,7 +3,6 @@ package com.tss.awesomehotel.controller;
 import com.tss.awesomehotel.controller.generic.GenericCustomerControllerTest;
 import com.tss.awesomehotel.model.ServiceResponse;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

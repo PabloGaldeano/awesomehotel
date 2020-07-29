@@ -1,26 +1,26 @@
 package com.tss.awesomehotel.service.customer.helper;
 
-import com.tss.awesomehotel.exception.HotelInternalException;
 import com.tss.awesomehotel.model.customer.CustomerToken;
 import com.tss.awesomehotel.model.interfaces.ModelValidator;
 import com.tss.awesomehotel.model.interfaces.TokenStringParser;
 import com.tss.awesomehotel.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CustomerTokenHelper implements ModelValidator<String>, TokenStringParser
 {
-    /**
-     * The separator used to divide the customer from the token
-     */
-    @Value("${app.tokens.token_separator}")
-    private String tokenSeparator;
-
     /**
      * The length of the token
      */
     @Value("${app.tokens.token_length}")
     private int tokenLength;
 
+    /**
+     * The separator used to divide the customer from the token
+     */
+    @Value("${app.tokens.token_separator}")
+    private String tokenSeparator;
 
     @Override
     public void validate(String entity)

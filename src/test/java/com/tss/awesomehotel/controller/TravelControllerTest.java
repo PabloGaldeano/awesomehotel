@@ -96,7 +96,7 @@ public class TravelControllerTest extends GenericCustomerControllerTest
         while(tripInfo != null)
         {
             Map<String,Object> pathInfo = (Map<String,Object>) tripInfo.get("pathInformation");
-            double pathID = (Double) pathInfo.get("travelPathID");
+            double pathID = (Double) pathInfo.get("id");
             if (Double.compare(tourStep, pathID) == 0)
             {
                 List<String> tripCustomers = (List<String>) tripInfo.get("customers");
