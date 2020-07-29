@@ -1,9 +1,10 @@
 package com.tss.awesomehotel.service.customer;
 
 import com.tss.awesomehotel.dao.customer.CustomerDAO;
-import com.tss.awesomehotel.exception.InternalHotelException;
-import com.tss.awesomehotel.exception.MasqueradeException;
+import com.tss.awesomehotel.exception.HotelInternalException;
+import com.tss.awesomehotel.exception.HotelMasqueradeException;
 import com.tss.awesomehotel.model.customer.Customer;
+import com.tss.awesomehotel.service.customer.validator.CustomerServiceValidator;
 import com.tss.awesomehotel.utils.StringHelper;
 import com.tss.awesomehotel.utils.security.CypherHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,18 @@ public class CustomerService
     @Qualifier("CustomerMongo")
     private CustomerDAO customerDAO;
 
+    /**
+     * A reference to the token service
+     */
      @Autowired
      private TokenService tokenService;
+
+    /**
+     * A reference to the validator for the customer
+     */
+    private final CustomerServiceValidator customerValidator = new CustomerServiceValidator();
+
+    // ============== PUBLIC INTERFACE =============
 
     /**
      * This method is used to register a customer against the database, it will check that the ID of the customer is null, and that the required fields are not empty or null
@@ -41,28 +52,10 @@ public class CustomerService
      */
     public boolean registerCustomer(Customer customer)
     {
-        this.validateCustomerInfoForInserting(customer);
-        customer.setPassword(CypherHelper.cypherString(customer.getPassword()));
+        this.customerValidator.validate(customer);
+        this.customerValidator.validateForInserting(customer);
+        customer.setPassword(this.cypherCustomerPassword(customer));
         return this.customerDAO.insertCustomerData(customer);
-    }
-
-    /**
-     * This method will make sure all the required information from the customer does exist
-     * and it has some value to be inserted. This will avoid customer without a first and a
-     * last name.
-     *
-     * @param customer The customer data used to check the names.
-     */
-    private void validateCustomerNames(@NonNull Customer customer)
-    {
-        if (!StringHelper.checkIfStringContainsSomething(customer.getFirstName()))
-        {
-            throw new IllegalArgumentException("The first name of the customer has to be valid");
-        }
-        if (!StringHelper.checkIfStringContainsSomething(customer.getLastName()))
-        {
-            throw new IllegalArgumentException("The last name of the customer has to be valid");
-        }
     }
 
     /**
@@ -91,45 +84,27 @@ public class CustomerService
      * @param customer The customer to check
      * @return The token generated for this customer
      */
-    public String logCustomerIn(@NonNull Customer customer) throws MasqueradeException
+    public String logCustomerIn(@NonNull Customer customer) throws HotelMasqueradeException
     {
         String ret = "";
-        if (customer != null)
+        this.customerValidator.validate(customer);
+        this.customerValidator.validateCustomerIDAndPassword(customer);
+        Optional<Customer> reference = this.customerDAO.retrieveCustomerByIDAndPassword(customer.getCustomerID(),
+                this.cypherCustomerPassword(customer));
+        if (reference.isPresent())
         {
-            this.validateCustomerIDAndPassword(customer);
-            String customerPasswordEncrypted = CypherHelper.cypherString(customer.getPassword());
-            Optional<Customer> reference = this.customerDAO.retrieveCustomerByIDAndPassword(customer.getCustomerID(), customerPasswordEncrypted);
-            if (reference.isPresent())
-            {
-               ret = this.invokeCustomerTokenGeneration(customer);
-            } else
-            {
-                Logger.getGlobal().log(Level.WARNING, "The customer with ID {0} could not be found in the DB",
-                        new Object[]{customer.getCustomerID()});
-            }
+           ret = this.invokeCustomerTokenGeneration(customer);
         } else
         {
-            throw new IllegalArgumentException("The customer can not be null!");
+            Logger.getGlobal().log(Level.WARNING, "The customer with ID {0} could not be found in the DB",
+                    new Object[]{customer.getCustomerID()});
         }
+
         return ret;
     }
 
-    /**
-     * This method is a wrapper to handle the exception thrown by the token service
-     * @param customer The customer to generate the token for
-     * @return The token on its string format
-     * @throws MasqueradeException Thrown when an internal exception is caught
-     */
-    private String invokeCustomerTokenGeneration(Customer customer) throws MasqueradeException
-    {
-        try
-        {
-            return this.tokenService.generateAndSaveTokenForCustomer(customer);
-        } catch (InternalHotelException exception)
-        {
-            throw new MasqueradeException();
-        }
-    }
+
+    // ============== PROTECTED INTERFACE =============
 
     /**
      * Method to return a customer by its ID from the database
@@ -141,43 +116,33 @@ public class CustomerService
         return this.customerDAO.retrieveCustomerData(customerID).orElse(null);
     }
 
-    /**
-     * This methods checks all the data of the customer needed for insertion.
-     *
-     * @param customer The customer to check
-     */
-    private void validateCustomerInfoForInserting(Customer customer)
-    {
-        this.validateCustomerNames(customer);
-        this.validateCustomerIDAndPassword(customer);
-    }
+    // ============== PRIVATE METHODS  =============
 
     /**
-     * This method makes sure the customer object has a valid ID and Password, otherwise
-     * it will throw a {@link IllegalArgumentException}
-     *
-     * @param customer The customer to check
+     * This method is a wrapper to handle the exception thrown by the token service
+     * @param customer The customer to generate the token for
+     * @return The token on its string format
+     * @throws HotelMasqueradeException Thrown when an internal exception is caught
      */
-    private void validateCustomerIDAndPassword(Customer customer)
+    private String invokeCustomerTokenGeneration(Customer customer) throws HotelMasqueradeException
     {
-        this.validateCustomerID(customer);
-
-        if (!StringHelper.checkIfStringContainsSomething(customer.getPassword()))
+        try
         {
-            throw new IllegalArgumentException("The password of the customer has to be valid");
+            return this.tokenService.generateAndSaveTokenForCustomer(customer);
+        } catch (HotelInternalException exception)
+        {
+            throw new HotelMasqueradeException();
         }
     }
 
     /**
-     * Method to validate the id of the customer object
-     * @param customer The customer object to check
+     * This method is used to cypher the customer password
+     * @param customer The customer to cypher its password
+     * @return A string representing the customer cyphered password
      */
-    private void validateCustomerID(@NonNull Customer customer)
+    private String cypherCustomerPassword(Customer customer)
     {
-        if (!StringHelper.checkIfStringContainsSomething(customer.getCustomerID()))
-        {
-            throw new IllegalArgumentException("The ID of the customer has to be valid");
-        }
+        return  CypherHelper.digestStringWithMD5AndSalt(customer.getPassword());
     }
 
 }

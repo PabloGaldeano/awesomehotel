@@ -1,6 +1,6 @@
 package com.tss.awesomehotel.service;
 
-import com.tss.awesomehotel.exception.MasqueradeException;
+import com.tss.awesomehotel.exception.HotelMasqueradeException;
 import com.tss.awesomehotel.model.customer.Customer;
 import com.tss.awesomehotel.service.customer.CustomerService;
 import org.junit.jupiter.api.AfterEach;
@@ -128,7 +128,7 @@ class CustomerServiceTest
 
 
     @Test
-    void logCustomerIn() throws MasqueradeException
+    void logCustomerIn() throws HotelMasqueradeException
     {
         this.service.registerCustomer(this.customer);
         this.beforeEachTest();

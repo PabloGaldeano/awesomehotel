@@ -5,9 +5,9 @@ import com.tss.awesomehotel.exception.codes.ErrorCodes;
 /**
  * This exception is used to hide the internal erros.
  */
-public class MasqueradeException extends HotelBaseException
+public class HotelMasqueradeException extends HotelBaseException
 {
-    public MasqueradeException()
+    public HotelMasqueradeException()
     {
         super(ErrorCodes.MASQUERADE.getErrorCode(),ErrorCodes.MASQUERADE.getErrorMessage());
     }

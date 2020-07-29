@@ -6,8 +6,8 @@ import com.tss.awesomehotel.exception.codes.ErrorCodes;
 import com.tss.awesomehotel.model.requests.GenericAuthRequest;
 import com.tss.awesomehotel.model.ServiceResponse;
 import com.tss.awesomehotel.model.requests.SignUpForTravelAuthRequest;
-import com.tss.awesomehotel.service.travel.TravelService;
-import com.tss.awesomehotel.service.travel.TravelSignUpService;
+import com.tss.awesomehotel.service.tour.TourService;
+import com.tss.awesomehotel.service.tour.TourSignUpService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -25,13 +25,13 @@ public class TravelController extends GenericController
      * The service reference to receive information about the trip
      */
     @Autowired
-    private TravelService travelService;
+    private TourService tourService;
 
     /**
      * The service to sign up customers for a ride
      */
     @Autowired
-    private TravelSignUpService signUpService;
+    private TourSignUpService signUpService;
 
     /**
      * Method to get the path of the trip
@@ -43,7 +43,7 @@ public class TravelController extends GenericController
     public ServiceResponse getShortestPath(@NonNull @RequestBody GenericAuthRequest request)
     {
         return this.handleCallExceptionAndCheckToken(request.getToken(), () ->
-                ServiceResponse.createSuccessResponse(new ModelMapper().map(this.travelService.getShortTourWithCustomers(), TourStepDTO.class)));
+                ServiceResponse.createSuccessResponse(new ModelMapper().map(this.tourService.getShortTourWithCustomers(), TourStepDTO.class)));
     }
 
     /**

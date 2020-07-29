@@ -6,12 +6,24 @@ import org.springframework.lang.NonNull;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * This class is the one used by the callers to provide an
+ * interface to cypher information.
+ */
 public class CypherHelper
 {
+    /**
+     * The salt used for the cypher processes
+     */
     @Value("${app.security.salt}")
     private static String salt;
 
-    public static String cypherString(@NonNull String toCypher)
+    /**
+     * Method to digest an string using MD5 algorithm with {@link #salt}
+     * @param toCypher The string to digest
+     * @return The digested string
+     */
+    public static String digestStringWithMD5AndSalt(@NonNull String toCypher)
     {
         MessageDigest md = null;
         String stringCyphered = "";

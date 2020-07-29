@@ -1,7 +1,8 @@
 package com.tss.awesomehotel.controller.basic;
 
 import com.tss.awesomehotel.exception.HotelBaseException;
-import com.tss.awesomehotel.exception.InternalHotelException;
+import com.tss.awesomehotel.exception.HotelInternalException;
+import com.tss.awesomehotel.exception.HotelMasqueradeException;
 import com.tss.awesomehotel.exception.codes.ErrorCodes;
 import com.tss.awesomehotel.model.customer.Customer;
 import com.tss.awesomehotel.model.ServiceResponse;
@@ -33,7 +34,7 @@ public class GenericController
     private ServiceResponse generateServiceResponseBasedOnExceptionForCommonRequest(Exception toCheck)
     {
         ServiceResponse toReturn;
-        if (toCheck instanceof InternalHotelException)
+        if (toCheck instanceof HotelInternalException)
         {
             toReturn = ServiceResponse.createErrorResponse(ErrorCodes.MASQUERADE.getErrorMessage(),
                     ErrorCodes.MASQUERADE.getErrorCode());
@@ -51,10 +52,21 @@ public class GenericController
 
     protected ServiceResponse handleCallExceptionAndCheckToken(String token, Supplier<ServiceResponse> functionToUse)
     {
-        return this.handleCallExceptions(() ->
-                (this.tokenService.checkTokenValidity(token)) ? functionToUse.get() :
-                        ServiceResponse.createErrorResponse(ErrorCodes.AUTHENTICATION.getErrorMessage(),
-                                ErrorCodes.AUTHENTICATION.getErrorCode()));
+        return this.handleCallExceptions(() -> this.doPetitionToServiceWithToken(token, functionToUse));
+    }
+
+    protected ServiceResponse doPetitionToServiceWithToken(String token, Supplier<ServiceResponse> functionToUse)
+    {
+        ServiceResponse toReturn;
+        try
+        {
+           toReturn = this.tokenService.checkTokenValidity(token) ? functionToUse.get() :
+            ServiceResponse.fromErrorCode(ErrorCodes.AUTHENTICATION);
+        }catch(HotelMasqueradeException exception)
+        {
+            toReturn = ServiceResponse.fromErrorCode(ErrorCodes.MASQUERADE);
+        }
+        return toReturn;
     }
 
     protected Customer getCustomerFromToken(String token)
@@ -62,7 +74,7 @@ public class GenericController
         try
         {
             return this.tokenService.getCustomerByToken(token);
-        }catch (InternalHotelException ex)
+        }catch (HotelMasqueradeException ex)
         {
             throw new NoSuchElementException("There is no customer with tha token associated");
         }

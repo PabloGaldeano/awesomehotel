@@ -29,12 +29,7 @@ public class TokenController extends GenericController
     @GetMapping("/identify/{token}")
     public ServiceResponse identifyCustomer(@NonNull @PathVariable("token") String token)
     {
-        return this.handleCallExceptions(() ->
-        {
-            boolean isTheTokenAlive = this.tokenService.checkTokenValidity(token);
-            return (isTheTokenAlive) ? ServiceResponse.createSuccessResponse(isTheTokenAlive) :
-                    ServiceResponse.createErrorResponse("The check-in service is unavailable at this time, please retry after a few minutes...");
-        });
+        return this.doPetitionToServiceWithToken(token, () -> ServiceResponse.createSuccessResponse(null));
 
     }
 }

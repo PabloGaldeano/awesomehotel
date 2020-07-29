@@ -1,7 +1,7 @@
 package com.tss.awesomehotel.controller;
 
 import com.tss.awesomehotel.controller.basic.GenericController;
-import com.tss.awesomehotel.exception.MasqueradeException;
+import com.tss.awesomehotel.exception.HotelMasqueradeException;
 import com.tss.awesomehotel.exception.codes.ErrorCodes;
 import com.tss.awesomehotel.model.customer.Customer;
 import com.tss.awesomehotel.model.ServiceResponse;
@@ -79,7 +79,7 @@ public class CustomerController extends GenericController
                 String customerToken = this.customerService.logCustomerIn(customer);
                 return (StringHelper.checkIfStringContainsSomething(customerToken)) ? ServiceResponse.createSuccessResponse(customerToken) :
                         ServiceResponse.fromErrorCode(ErrorCodes.INVALID_CREDENTIALS);
-            } catch (MasqueradeException ex)
+            } catch (HotelMasqueradeException ex)
             {
                 toReturn = ServiceResponse.createErrorResponse(ex.getMessage(), ex.getExceptionCode());
             }
