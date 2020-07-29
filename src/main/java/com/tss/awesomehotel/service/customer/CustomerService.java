@@ -1,6 +1,8 @@
 package com.tss.awesomehotel.service.customer;
 
 import com.tss.awesomehotel.dao.customer.CustomerDAO;
+import com.tss.awesomehotel.exception.InternalHotelException;
+import com.tss.awesomehotel.exception.MasqueradeException;
 import com.tss.awesomehotel.model.customer.Customer;
 import com.tss.awesomehotel.utils.StringHelper;
 import com.tss.awesomehotel.utils.security.CypherHelper;
@@ -89,7 +91,7 @@ public class CustomerService
      * @param customer The customer to check
      * @return The token generated for this customer
      */
-    public String logCustomerIn(@NonNull Customer customer)
+    public String logCustomerIn(@NonNull Customer customer) throws MasqueradeException
     {
         String ret = "";
         if (customer != null)
@@ -99,7 +101,7 @@ public class CustomerService
             Optional<Customer> reference = this.customerDAO.retrieveCustomerByIDAndPassword(customer.getCustomerID(), customerPasswordEncrypted);
             if (reference.isPresent())
             {
-               ret = this.tokenService.generateAndSaveTokenForCustomer(customer);
+               ret = this.invokeCustomerTokenGeneration(customer);
             } else
             {
                 Logger.getGlobal().log(Level.WARNING, "The customer with ID {0} could not be found in the DB",
@@ -112,7 +114,29 @@ public class CustomerService
         return ret;
     }
 
-    public Customer findCustomerByID(@NonNull String customerID)
+    /**
+     * This method is a wrapper to handle the exception thrown by the token service
+     * @param customer The customer to generate the token for
+     * @return The token on its string format
+     * @throws MasqueradeException Thrown when an internal exception is caught
+     */
+    private String invokeCustomerTokenGeneration(Customer customer) throws MasqueradeException
+    {
+        try
+        {
+            return this.tokenService.generateAndSaveTokenForCustomer(customer);
+        } catch (InternalHotelException exception)
+        {
+            throw new MasqueradeException();
+        }
+    }
+
+    /**
+     * Method to return a customer by its ID from the database
+     * @param customerID The customer ID to check
+     * @return An isntance of the customer, null otherwise
+     */
+    protected Customer findCustomerByID(@NonNull String customerID)
     {
         return this.customerDAO.retrieveCustomerData(customerID).orElse(null);
     }
@@ -136,14 +160,23 @@ public class CustomerService
      */
     private void validateCustomerIDAndPassword(Customer customer)
     {
-        if (!StringHelper.checkIfStringContainsSomething(customer.getCustomerID()))
-        {
-            throw new IllegalArgumentException("The ID of the customer has to be valid");
-        }
+        this.validateCustomerID(customer);
 
         if (!StringHelper.checkIfStringContainsSomething(customer.getPassword()))
         {
             throw new IllegalArgumentException("The password of the customer has to be valid");
+        }
+    }
+
+    /**
+     * Method to validate the id of the customer object
+     * @param customer The customer object to check
+     */
+    private void validateCustomerID(@NonNull Customer customer)
+    {
+        if (!StringHelper.checkIfStringContainsSomething(customer.getCustomerID()))
+        {
+            throw new IllegalArgumentException("The ID of the customer has to be valid");
         }
     }
 

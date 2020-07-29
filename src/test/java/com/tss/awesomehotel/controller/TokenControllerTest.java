@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"spring.data.mongodb.host=localhost", "spring.data.mongodb.port=27017", "spring.data.mongodb.database=awesomehotelTest"})
+@SpringBootTest()
 @AutoConfigureMockMvc
 public class TokenControllerTest extends GenericCustomerControllerTest
 {
@@ -32,12 +32,12 @@ public class TokenControllerTest extends GenericCustomerControllerTest
         String token = response.getResponseData().toString();
         Assertions.assertEquals(token.split("__")[1], this.testCustomer.getCustomerID(), "The customer ID does not match");
 
-        this.customerTokenCheckRequestBuilder = MockMvcRequestBuilders.get("/identify/" + token);
+        this.customerTokenCheckRequestBuilder = MockMvcRequestBuilders.get("/token/identify/" + token);
         response = this.executePetitionAndExpectTotalSuccess(this.customerTokenCheckRequestBuilder);
         System.out.println(response.getResponseData());
         this.testCheckOutCustomerAndExpectTotalSuccess();
 
-        this.customerTokenCheckRequestBuilder = MockMvcRequestBuilders.get("/identify/wrongToken");
+        this.customerTokenCheckRequestBuilder = MockMvcRequestBuilders.get("/token/identify/wrongToken");
         this.executePetitionAndExpectWrongResponse(this.customerTokenCheckRequestBuilder);
 
     }

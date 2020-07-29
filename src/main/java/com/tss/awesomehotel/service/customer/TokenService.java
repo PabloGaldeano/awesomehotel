@@ -1,6 +1,7 @@
 package com.tss.awesomehotel.service.customer;
 
 import com.tss.awesomehotel.dao.customer.CustomerTokenDAO;
+import com.tss.awesomehotel.exception.InternalHotelException;
 import com.tss.awesomehotel.model.customer.Customer;
 import com.tss.awesomehotel.model.customer.CustomerToken;
 import com.tss.awesomehotel.utils.StringHelper;
@@ -28,7 +29,7 @@ public class TokenService
     @Value("${app.tokens.token_separator}")
     private String tokenSeparator;
 
-    public String generateAndSaveTokenForCustomer(@NonNull Customer customer)
+    protected String generateAndSaveTokenForCustomer(@NonNull Customer customer) throws InternalHotelException
     {
         String ret;
         Optional<String> tokenContainer = this.checkCustomerTokenByCustomerID(customer.getCustomerID());
@@ -49,16 +50,16 @@ public class TokenService
      * @param customerID The customer ID who owns the token
      * @return An {@link Optional} container with the information.
      */
-    public Optional<String> checkCustomerTokenByCustomerID(@NonNull String customerID)
+    private Optional<String> checkCustomerTokenByCustomerID(@NonNull String customerID)  throws InternalHotelException
     {
         Optional<String> customerTokenContainer;
         if (StringHelper.checkIfStringContainsSomething(customerID))
         {
             Optional<CustomerToken> tokenContainer = this.customerTokenDAO.getTokenForCustomer(customerID);
-            customerTokenContainer = tokenContainer.map(CustomerToken::getToken).or(() -> Optional.ofNullable(null));
+            customerTokenContainer = tokenContainer.map(CustomerToken::getToken).or(() -> Optional.empty());
         } else
         {
-            throw new IllegalArgumentException("The customer ID can't be null in order to retrieve the token");
+            throw new InternalHotelException("The customer ID can't be null in order to retrieve the token");
         }
         return customerTokenContainer;
     }
@@ -66,12 +67,20 @@ public class TokenService
 
     public boolean checkTokenValidity(@NonNull String token)
     {
-        CustomerToken customerToken = this.parseToken(token);
-        return this.customerTokenDAO.getTokenForCustomer(customerToken.getCustomerID()).isPresent();
+        boolean isValid = false;
+        try
+        {
+            CustomerToken customerToken = this.parseToken(token);
+            isValid = this.customerTokenDAO.getTokenForCustomer(customerToken.getCustomerID()).isPresent();
+        }catch(InternalHotelException exception)
+        {
+            System.out.println("Error while checking the token -> " + exception.getMessage());
+        }
+        return isValid;
     }
 
 
-    public CustomerToken buildCustomerToken(@NonNull Customer customer)
+    private CustomerToken buildCustomerToken(@NonNull Customer customer) throws InternalHotelException
     {
         CustomerToken customerTokenEntity;
         if (customer != null && StringHelper.checkIfStringContainsSomething(customer.getCustomerID()))
@@ -83,12 +92,12 @@ public class TokenService
             customerTokenEntity = new CustomerToken(customer.getCustomerID(), fullTokenString);
         } else
         {
-            throw new IllegalArgumentException("The customer can't be null in order to generate the token");
+            throw new InternalHotelException("The customer can't be null in order to generate the token");
         }
         return customerTokenEntity;
     }
 
-    public CustomerToken parseToken(@NonNull String token)
+    private CustomerToken parseToken(@NonNull String token) throws InternalHotelException
     {
         CustomerToken parsedTokenObject;
         if (StringHelper.checkIfStringContainsSomething(token) && token.indexOf(this.tokenSeparator) > 0)
@@ -97,12 +106,12 @@ public class TokenService
             parsedTokenObject = new CustomerToken(tokenParts[1], tokenParts[0]);
         } else
         {
-            throw new IllegalArgumentException("The token can't be null and must include the separator");
+            throw new InternalHotelException("The token can't be null and must include the separator");
         }
         return parsedTokenObject;
     }
 
-    public Customer getCustomerByToken(String token)
+    public Customer getCustomerByToken(String token) throws InternalHotelException
     {
         Customer customer = null;
         if (this.checkTokenValidity(token))

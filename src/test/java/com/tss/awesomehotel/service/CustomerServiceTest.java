@@ -1,5 +1,6 @@
 package com.tss.awesomehotel.service;
 
+import com.tss.awesomehotel.exception.MasqueradeException;
 import com.tss.awesomehotel.model.customer.Customer;
 import com.tss.awesomehotel.service.customer.CustomerService;
 import org.junit.jupiter.api.AfterEach;
@@ -64,9 +65,7 @@ class CustomerServiceTest
     private void testThrowInCustomerRegistration(Customer customer)
     {
         this.testIllegalArgumentException(() ->
-        {
-            this.service.registerCustomer(customer);
-        });
+                this.service.registerCustomer(customer));
     }
 
     private void testCriticalDataAsNull(Customer customer)
@@ -129,7 +128,7 @@ class CustomerServiceTest
 
 
     @Test
-    void logCustomerIn()
+    void logCustomerIn() throws MasqueradeException
     {
         this.service.registerCustomer(this.customer);
         this.beforeEachTest();

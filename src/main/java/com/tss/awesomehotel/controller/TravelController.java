@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * This class is used to provide an interface for
+ */
 @RestController
 @RequestMapping("/tour")
-@CrossOrigin(origins = "http://localhost:8081")
 public class TravelController extends GenericController
 {
     @Autowired

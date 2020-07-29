@@ -1,6 +1,8 @@
 package com.tss.awesomehotel.controller;
 
 import com.tss.awesomehotel.controller.basic.GenericController;
+import com.tss.awesomehotel.exception.MasqueradeException;
+import com.tss.awesomehotel.exception.codes.ErrorCodes;
 import com.tss.awesomehotel.model.customer.Customer;
 import com.tss.awesomehotel.model.ServiceResponse;
 import com.tss.awesomehotel.service.customer.CustomerService;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RequestMapping("/customer")
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 public class CustomerController extends GenericController
 {
@@ -35,8 +36,8 @@ public class CustomerController extends GenericController
         {
             boolean wasTheCustomerCheckedIn = this.customerService.registerCustomer(customer);
             toReturn = (wasTheCustomerCheckedIn) ? ServiceResponse.createSuccessResponse(customer.getFirstName()) :
-                    ServiceResponse.createErrorResponse("The check-in service is unavailable at this time, please retry after a few minutes...");
-        }catch(IllegalArgumentException illegalArgumentException)
+                    ServiceResponse.fromErrorCode(ErrorCodes.REGISTRATION);
+        } catch (IllegalArgumentException illegalArgumentException)
         {
             toReturn = ServiceResponse.createErrorResponse(illegalArgumentException.getMessage());
         }
@@ -46,38 +47,44 @@ public class CustomerController extends GenericController
 
     /**
      * This is a function used to check out a customer.
+     *
      * @param customerID The ID of the customer to checkout
      * @return A {@link ServiceResponse } instance with the result of the operation
      */
     @DeleteMapping("/check_out")
     public ServiceResponse checkOutCustomer(@NonNull @RequestBody String customerID)
     {
-        ServiceResponse toReturn;
-        try
+        return this.handleCallExceptions(() ->
         {
             boolean wasTheCustomerCheckedIn = this.customerService.deleteCustomerByID(customerID);
-            toReturn = (wasTheCustomerCheckedIn) ? ServiceResponse.createSuccessResponse(null) :
-                    ServiceResponse.createErrorResponse("The check-in service is unavailable at this time, please retry after a few minutes...");
-        }catch(IllegalArgumentException illegalArgumentException)
-        {
-            toReturn = ServiceResponse.createErrorResponse(illegalArgumentException.getMessage());
-        }
-        return toReturn;
+            return (wasTheCustomerCheckedIn) ? ServiceResponse.createSuccessResponse(null) :
+                    ServiceResponse.fromErrorCode(ErrorCodes.MASQUERADE);
+        });
     }
 
+    /**
+     * Method used to log a customer in the system
+     *
+     * @param customer The customer to to check
+     * @return a response object with the operation result
+     */
     @PostMapping("/log_in")
     public ServiceResponse logCustomerIn(@NonNull @RequestBody Customer customer)
     {
-       return this.handleCallExceptions(() ->
-       {
-           String customerToken = this.customerService.logCustomerIn(customer);
-           return (StringHelper.checkIfStringContainsSomething(customerToken)) ? ServiceResponse.createSuccessResponse(customerToken) :
-                   ServiceResponse.createErrorResponse("The introduced credentials are invalid, please try again later...");
-       });
+        return this.handleCallExceptions(() ->
+        {
+            ServiceResponse toReturn;
+            try
+            {
+                String customerToken = this.customerService.logCustomerIn(customer);
+                return (StringHelper.checkIfStringContainsSomething(customerToken)) ? ServiceResponse.createSuccessResponse(customerToken) :
+                        ServiceResponse.fromErrorCode(ErrorCodes.INVALID_CREDENTIALS);
+            } catch (MasqueradeException ex)
+            {
+                toReturn = ServiceResponse.createErrorResponse(ex.getMessage(), ex.getExceptionCode());
+            }
+            return toReturn;
+        });
+
     }
-
-
-
-
-
 }

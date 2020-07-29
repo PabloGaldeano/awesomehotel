@@ -10,14 +10,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * This class is used as a controller to provide an interface
+ * in order to operate with the tokens
+ */
 @RestController
-@RequestMapping("/identify")
+@RequestMapping("/token")
 public class TokenController extends GenericController
 {
     @Autowired
     private TokenService tokenService;
 
-    @GetMapping("/{token}")
+    /**
+     * Method to check if a token is valid or not
+     * @param token The token to check
+     * @return A response with the operation result
+     */
+    @GetMapping("/identify/{token}")
     public ServiceResponse identifyCustomer(@NonNull @PathVariable("token") String token)
     {
         return this.handleCallExceptions(() ->
