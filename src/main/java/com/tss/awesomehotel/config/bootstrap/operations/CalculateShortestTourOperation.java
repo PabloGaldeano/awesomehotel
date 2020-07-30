@@ -67,17 +67,20 @@ public class CalculateShortestTourOperation implements BootstrapOperation
     {
         // Reading the paths from the DB
         this.tourStops = this.pathsDao.getAllPaths();
-        this.routeGraph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+        if (!this.tourStops.isEmpty()) {
+            this.routeGraph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
 
-        tourStops.stream().peek(travelPath ->
-        {
-            routeGraph.addVertex(travelPath);
-            System.out.println("Adding the stop " + travelPath.getName());
-        }).collect(Collectors.toList()).forEach(travelPath ->
-                travelPath.getConnections().forEach(connectionsMap ->
-                        this.parsePathConnections(travelPath, connectionsMap)));
+            tourStops.stream().peek(travelPath ->
+            {
+                routeGraph.addVertex(travelPath);
+                System.out.println("Adding the stop " + travelPath.getName());
+            }).collect(Collectors.toList()).forEach(travelPath ->
+                    travelPath.getConnections().forEach(connectionsMap ->
+                            this.parsePathConnections(travelPath, connectionsMap)));
 
-        this.calculateShortestPath();
+
+            this.calculateShortestPath();
+        }
         System.out.println("Calculating shortest path");
     }
 
